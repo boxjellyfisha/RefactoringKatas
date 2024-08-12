@@ -1,7 +1,5 @@
 package com.gildedrose
 
-open class Item(val name: String, var sellIn: Int, var quality: Int) {
-    override fun toString(): String {
-        return this.name + ", " + this.sellIn + ", " + this.quality
-    }
+data class Item(val name: String, val sellIn: Int, val quality: Int) {
+    override fun toString(): String = "$name, $sellIn, $quality"
 }
