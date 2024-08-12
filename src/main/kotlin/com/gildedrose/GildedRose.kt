@@ -11,55 +11,34 @@ class GildedRose(var items: List<Item>) {
     }
 
     private fun Item.update() {
-        when (name) {
-            AGED_BRIE -> {
-                updateQuality(1)
-            }
-            CONCERT_BACKSTAGE_PASS -> {
-                if (quality < 50) {
-                    updateQuality(1)
+        updateSellInDays()
+        updateQuality()
+    }
 
-                    if (sellIn < 11) {
-                        updateQuality(1)
-                    }
+    private fun Item.updateSellInDays() {
+        sellIn -= if (name == SULFURAS) 0 else 1
+    }
 
-                    if (sellIn < 6) {
-                        updateQuality(1)
-                    }
+    private fun Item.updateQuality() {
+        updateQuality(
+            when (name) {
+                AGED_BRIE -> if (sellIn < 0) 2 else 1
+                CONCERT_BACKSTAGE_PASS -> when {
+                    sellIn < 0 -> -quality
+                    sellIn < 5 -> 3
+                    sellIn < 10 -> 2
+                    else -> 1
                 }
-            }
-            SULFURAS -> {
-                quality -= 0
 
+                SULFURAS -> 0
+                else -> if (sellIn < 0) -2 else -1
             }
-            else -> {
-                if (quality > 0) quality -= 1
-            }
-        }
-
-        if (name != SULFURAS) {
-            sellIn -= 1
-        }
-
-        if (sellIn < 0) {
-            if (name != AGED_BRIE) {
-                if (name != CONCERT_BACKSTAGE_PASS) {
-                    if (quality > 0 && name != SULFURAS) {
-                        quality -= 1
-                    }
-                } else {
-                    quality = 0
-                }
-            } else {
-                updateQuality(1)
-            }
-        }
+        )
     }
 
     private fun Item.updateQuality(change: Int) {
-        if (quality < 50) {
-            quality += change
-        }
+        if(change == 0) return
+        quality = quality.plus(change).coerceIn(0, 50)
     }
 }
 
